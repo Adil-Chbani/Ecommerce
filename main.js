@@ -441,32 +441,29 @@ function submitOrder() {
 
   if (!valid) return;
 
-  // Build beautiful product list with images
+  // Build product list
   const itemsDetails = orderCart
     .map((i) => {
       const product = PRODUCTS.find((p) => p.id === i.id);
       const itemTotal = (i.price * i.qty).toFixed(0);
-      return `
-📌 *${i.name}*
-   
-   💲 السعر: ${i.price} درهم
-   🔢 الكمية: ${i.qty}
-   💰 الإجمالي: ${itemTotal} درهم`;
+      return `*${i.name}*
+السعر: ${i.price} درهم
+الكمية: ${i.qty}
+الإجمالي: ${itemTotal} درهم`;
     })
     .join("\n\n");
 
-  //const total = orderCart.reduce((s, i) => s + i.price * i.qty, 0);
+  const msg = `
+📋 *طلب جديد*
 
- const msg = `
 👤 *اسم العميل:* ${name}
-📞 *رقم الهاتف:* ${phone}
-📍 *عنوان التوصيل:* ${address}
+📱 *رقم الهاتف:* ${phone}
+📍 *العنوان:* ${address}
 
 📦 *المنتجات:*
 ${itemsDetails}
-${notes ? `📝 *ملاحظات العميل:*\n${notes}\n` : ""}
-✅ *حالة الطلب:* في الانتظار
-⏰ *التاريخ:* ${new Date().toLocaleDateString("ar-MA")}
+${notes ? `📝 *ملاحظات:* ${notes}\n` : ""}
+✅ *الحالة:* في الانتظار
 `;
 
   window.open(
