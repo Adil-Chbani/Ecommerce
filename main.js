@@ -239,6 +239,29 @@ function goBack() {
   }
 }
 
+// ========== LOCALSTORAGE UTILS ==========
+function saveCartToStorage() {
+  localStorage.setItem("asalaCart", JSON.stringify(cart));
+}
+
+function loadCartFromStorage() {
+  const saved = localStorage.getItem("asalaCart");
+  if (saved) {
+    try {
+      cart = JSON.parse(saved);
+      updateCartBadge();
+    } catch (e) {
+      console.log("خطأ في تحميل السلة");
+      cart = [];
+    }
+  }
+}
+
+function clearCartStorage() {
+  localStorage.removeItem("asalaCart");
+  cart = [];
+}
+
 // ========== CART UTILS ==========
 function getCartCount() {
   return cart.reduce((s, i) => s + i.qty, 0);
@@ -263,6 +286,7 @@ function addToCart(product) {
     cart.push({ ...product, qty: 1 });
   }
   updateCartBadge();
+  saveCartToStorage();
 }
 
 function updateQty(id, qty) {
@@ -273,6 +297,7 @@ function updateQty(id, qty) {
   const item = cart.find((i) => i.id === id);
   if (item) item.qty = qty;
   updateCartBadge();
+  saveCartToStorage();
   // re-render cart if on cart page
   if (currentPage.name === "cart") renderPage();
 }
@@ -280,6 +305,7 @@ function updateQty(id, qty) {
 function removeFromCart(id) {
   cart = cart.filter((i) => i.id !== id);
   updateCartBadge();
+  saveCartToStorage();
   if (currentPage.name === "cart") renderPage();
 }
 
@@ -471,7 +497,7 @@ ${notes ? `📝 *ملاحظات:* ${notes}\n` : ""}
     "_blank",
   );
   closeOrderModal();
-  cart = [];
+  clearCartStorage();
   updateCartBadge();
   showToast("تم إرسال طلبك بنجاح! سنتواصل معك قريباً ✅");
   if (currentPage.name === "cart") renderPage();
@@ -879,6 +905,9 @@ function renderMobileMenu() {
 }
 
 // ========== INIT ==========
+// Load cart from storage
+loadCartFromStorage();
+
 // Parse initial URL and set current page
 if (!window.location.hash) {
   window.location.hash = "#/";
