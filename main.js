@@ -446,17 +446,16 @@ function submitOrder() {
     .map((i) => {
       const product = PRODUCTS.find((p) => p.id === i.id);
       const itemTotal = (i.price * i.qty).toFixed(0);
-      const imageUrl = product ? product.image : "";
       return `
 📌 *${i.name}*
-   🖼️ صورة: ${imageUrl}
+   
    💲 السعر: ${i.price} درهم
    🔢 الكمية: ${i.qty}
    💰 الإجمالي: ${itemTotal} درهم`;
     })
     .join("\n\n");
 
-  const total = orderCart.reduce((s, i) => s + i.price * i.qty, 0);
+  //const total = orderCart.reduce((s, i) => s + i.price * i.qty, 0);
 
  const msg = `
 👤 *اسم العميل:* ${name}
@@ -465,18 +464,9 @@ function submitOrder() {
 
 📦 *المنتجات:*
 ${itemsDetails}
-
-💎 *الملخص المالي:*
-🔸 عدد المنتجات: ${orderCart.length}
-🔸 المجموع النهائي: *${total.toFixed(0)} درهم*
-
 ${notes ? `📝 *ملاحظات العميل:*\n${notes}\n` : ""}
 ✅ *حالة الطلب:* في الانتظار
 ⏰ *التاريخ:* ${new Date().toLocaleDateString("ar-MA")}
-
-🎁 شكراً لاختيارك Asala Shop
-💎 جودة عالية • أسعار مناسبة • خدمة ممتازة
-📲 متاحون 24/7
 `;
 
   window.open(
