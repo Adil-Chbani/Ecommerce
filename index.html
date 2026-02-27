@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <title>Asala Shop — متجر إلكتروني مغربي</title>
+    <link rel="stylesheet" href="img/2.jpg">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cinzel+Decorative:wght@700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav class="nav" id="navbar">
+      <div style="display: flex; align-items: center; gap: 16px">
+        <button class="hamburger" id="hamburger" onclick="toggleMenu()">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+        <div class="nav-logo" onclick="navigate('home')">Asala Shop</div>
+        <div id="nav-categories" class="nav-cats"></div>
+      </div>
+      <div class="nav-actions">
+        <button class="cart-btn" onclick="navigate('cart')">
+          🛒 السلة
+          <div class="cart-badge" id="cart-badge" style="display: none">0</div>
+        </button>
+      </div>
+    </nav>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="mobile-menu-header">
+        <div
+          class="nav-logo"
+          onclick="
+            navigate('home');
+            closeMenu();
+          "
+        >
+          Asala Shop
+        </div>
+        <button class="close-menu" onclick="closeMenu()">✕</button>
+      </div>
+      <div class="mobile-menu-content" id="mobile-menu-content"></div>
+      <div class="mobile-menu-footer">
+        <button
+          class="btn-whatsapp"
+          style="width: 100%; justify-content: center"
+          onclick="
+            openOrderModal(cart.length > 0 ? [...cart] : []);
+            closeMenu();
+          "
+        >
+          📲 اطلب الآن
+        </button>
+      </div>
+    </div>
+    <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+
+    <!-- MAIN CONTENT -->
+    <main id="app"></main>
+
+    <!-- CONFIRM POPUP -->
+    <div class="confirm-popup" id="confirm-popup" style="display: none">
+      <div class="confirm-box">
+        <div class="confirm-icon">🛒</div>
+        <div class="confirm-title">إضافة إلى السلة</div>
+        <div class="confirm-sub" id="confirm-text"></div>
+        <div class="confirm-actions">
+          <button class="btn-gold" onclick="confirmAdd()">نعم، أضفه</button>
+          <button class="btn-outline" onclick="cancelConfirm()">إلغاء</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ORDER MODAL -->
+    <div
+      class="modal-overlay"
+      id="order-modal"
+      style="display: none"
+      onclick="handleOrderOverlayClick(event)"
+    >
+      <div class="modal order-modal">
+        <button class="modal-close" onclick="closeOrderModal()">✕</button>
+        <div class="modal-title">🛍️ تأكيد الطلب</div>
+
+        <!-- Order Summary Section -->
+        <div class="order-summary" id="order-summary">
+          <div class="summary-title">📦 المنتجات المطلوبة:</div>
+          <div id="order-items-preview" class="order-items-list"></div>
+          <div class="summary-divider"></div>
+          <div class="summary-total" id="order-total-preview"></div>
+        </div>
+
+        <!-- Form Section -->
+        <div class="form-group">
+          <label class="form-label">الاسم الكامل *</label>
+          <input
+            class="form-input"
+            id="order-name"
+            placeholder="أدخل اسمك الكامل"
+          />
+          <div class="form-error" id="error-name"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">رقم الهاتف *</label>
+          <input class="form-input" id="order-phone" placeholder="06XXXXXXXX" />
+          <div class="form-error" id="error-phone"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">العنوان الكامل *</label>
+          <textarea
+            class="form-input"
+            id="order-address"
+            placeholder="المدينة، الحي، الشارع..."
+          ></textarea>
+          <div class="form-error" id="error-address"></div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">ملاحظات (اختياري)</label>
+          <textarea
+            class="form-input"
+            id="order-notes"
+            placeholder="أي ملاحظات إضافية..."
+          ></textarea>
+        </div>
+        <button
+          class="btn-whatsapp"
+          style="width: 100%; justify-content: center"
+          onclick="submitOrder()"
+        >
+          <span>📲</span> إرسال الطلب عبر واتساب
+        </button>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast" style="display: none"></div>
+
+    <!-- QUICK VIEW MODAL -->
+    <div
+      class="modal-overlay"
+      id="quick-view-modal"
+      style="display: none"
+      onclick="handleQuickViewOverlayClick(event)"
+    >
+      <div class="modal quick-view-modal">
+        <button class="modal-close" onclick="closeQuickViewModal()">✕</button>
+        <div class="qv-container">
+          <div class="qv-images-section">
+            <img
+              id="quickview-main-img"
+              src=""
+              alt="Product"
+              class="qv-main-img"
+            />
+            <div class="qv-thumbnails" id="quickview-images"></div>
+          </div>
+          <div class="qv-info-section">
+            <div class="qv-name" id="quickview-name"></div>
+            <div class="qv-price-row">
+              <div class="qv-price" id="quickview-price"></div>
+              <div
+                class="qv-old-price"
+                id="quickview-old-price"
+                style="display: none"
+              ></div>
+            </div>
+            <div class="qv-description" id="quickview-description"></div>
+            <div class="qv-buttons">
+              <button
+                class="btn-gold"
+                onclick="
+                  if (quickViewProduct) {
+                    openOrderModal([{ ...quickViewProduct, qty: 1 }]);
+                    closeQuickViewModal();
+                  }
+                "
+              >
+                📲 اطلب الآن
+              </button>
+              <button
+                class="btn-outline"
+                onclick="
+                  if (quickViewProduct) {
+                    handleAddToCart(quickViewProduct);
+                    closeQuickViewModal();
+                  }
+                "
+              >
+                🛒 إضافة إلى السلة
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOBILE MENU -->
+    <div class="mobile-menu" id="mobileMenu">
+      <div class="mobile-menu-header">
+        <div
+          class="nav-logo"
+          onclick="
+            navigate('home');
+            closeMenu();
+          "
+          style="margin: 0"
+        >
+          Asala Shop
+        </div>
+        <button class="close-menu" onclick="closeMenu()">✕</button>
+      </div>
+      <div class="mobile-menu-content" id="mobile-menu-content"></div>
+      <div class="mobile-menu-footer">
+        <button
+          class="btn-whatsapp"
+          style="width: 100%; justify-content: center; margin: 16px 12px 0"
+          onclick="
+            openOrderModal(cart.length > 0 ? [...cart] : []);
+            closeMenu();
+          "
+        >
+          📲 اطلب الآن
+        </button>
+      </div>
+    </div>
+    <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+
+    <script>
+      function toggleMenu() {
+        const menu = document.getElementById("mobileMenu");
+        const overlay = document.getElementById("menuOverlay");
+        menu.classList.toggle("active");
+        overlay.classList.toggle("active");
+      }
+
+      function closeMenu() {
+        const menu = document.getElementById("mobileMenu");
+        const overlay = document.getElementById("menuOverlay");
+        menu.classList.remove("active");
+        overlay.classList.remove("active");
+      }
+    </script>
+    <script src="main.js"></script>
+  </body>
+</html>
