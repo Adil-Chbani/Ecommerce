@@ -643,8 +643,8 @@ function renderHomePage() {
     </div>
 
     <div class="section" style="padding-top:0;">
-      <div class="section-title">🔥 الأكثر مبيعاً</div>
-      <div class="section-sub">المنتجات التي يطلبها زبناؤنا باستمرار</div>
+      <div class="section-title">🔥 منتجاتنا</div>
+      <div class="section-sub">جميع المنتجات المتاحة في متجرنا</div>
       <div class="prod-grid">${featuredHTML}</div>
     </div>
 
