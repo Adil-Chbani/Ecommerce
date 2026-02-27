@@ -585,10 +585,7 @@ function renderFooter() {
 // ========== PAGE: HOME ==========
 function renderHomePage() {
   const heroProducts = PRODUCTS.filter((p) => p.badge).slice(0, 4);
-  const featured = PRODUCTS.filter((p) => p.badge === "الأكثر مبيعاً").slice(
-    0,
-    4,
-  );
+  const featured = PRODUCTS;
 
   const slidesHTML = heroProducts
     .map(
