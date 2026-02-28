@@ -107,38 +107,76 @@
     </script>
   </head>
   <body>
+    <!-- Skip to Main Link -->
+    <a href="#app" class="skip-to-main">اذهب للمحتوى الرئيسي</a>
+
     <!-- NAV -->
-    <nav class="nav" id="navbar">
+    <nav class="nav" id="navbar" role="navigation" aria-label="التنقل الرئيسي">
       <div style="display: flex; align-items: center; gap: 16px">
-        <button class="hamburger" id="hamburger" onclick="toggleMenu()">
-          <span></span>
-          <span></span>
-          <span></span>
+        <button
+          class="hamburger"
+          id="hamburger"
+          onclick="toggleMenu()"
+          aria-label="فتح قائمة التنقل"
+          aria-expanded="false"
+          aria-controls="mobileMenu"
+        >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
         </button>
-        <div class="nav-logo" onclick="navigate('home')">Asala Shop</div>
-        <div id="nav-categories" class="nav-cats"></div>
+        <button
+          class="nav-logo"
+          onclick="navigate('home')"
+          aria-label="الصفحة الرئيسية - متجر أسالة"
+          style="background: none; border: none; cursor: pointer; padding: 0"
+        >
+          Asala Shop
+        </button>
+        <div id="nav-categories" class="nav-cats" role="menubar"></div>
       </div>
       <div class="nav-actions">
-        <button class="cart-btn" onclick="navigate('cart')">
-          🛒 السلة
-          <div class="cart-badge" id="cart-badge" style="display: none">0</div>
+        <button class="cart-btn" onclick="navigate('cart')" aria-label="السلة">
+          <span aria-hidden="true">🛒</span> السلة
+          <div
+            class="cart-badge"
+            id="cart-badge"
+            style="display: none"
+            aria-label="عدد العناصر في السلة"
+          >
+            0
+          </div>
         </button>
       </div>
     </nav>
 
     <!-- MOBILE MENU -->
-    <div class="mobile-menu" id="mobileMenu">
+    <div
+      class="mobile-menu"
+      id="mobileMenu"
+      role="navigation"
+      aria-label="قائمة التنقل للهاتف"
+      aria-hidden="true"
+    >
       <div class="mobile-menu-header">
-        <div
+        <button
           class="nav-logo"
           onclick="
             navigate('home');
             closeMenu();
           "
+          aria-label="الصفحة الرئيسية - أغلق القائمة"
+          style="background: none; border: none; cursor: pointer; padding: 0"
         >
           Asala Shop
-        </div>
-        <button class="close-menu" onclick="closeMenu()">✕</button>
+        </button>
+        <button
+          class="close-menu"
+          onclick="closeMenu()"
+          aria-label="إغلاق قائمة التنقل"
+        >
+          <span aria-hidden="true">✕</span>
+        </button>
       </div>
       <div class="mobile-menu-content" id="mobile-menu-content"></div>
       <div class="mobile-menu-footer">
@@ -149,21 +187,34 @@
             openOrderModal(cart.length > 0 ? [...cart] : []);
             closeMenu();
           "
+          aria-label="اطلب الآن عبر واتساب"
         >
-          📲 اطلب الآن
+          <span aria-hidden="true">📲</span> اطلب الآن
         </button>
       </div>
     </div>
-    <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+    <div
+      class="menu-overlay"
+      id="menuOverlay"
+      onclick="closeMenu()"
+      aria-hidden="true"
+    ></div>
 
     <!-- MAIN CONTENT -->
     <main id="app"></main>
 
     <!-- CONFIRM POPUP -->
-    <div class="confirm-popup" id="confirm-popup" style="display: none">
+    <div
+      class="confirm-popup"
+      id="confirm-popup"
+      style="display: none"
+      role="alertdialog"
+      aria-labelledby="confirm-title"
+      aria-describedby="confirm-text"
+    >
       <div class="confirm-box">
-        <div class="confirm-icon">🛒</div>
-        <div class="confirm-title">إضافة إلى السلة</div>
+        <div class="confirm-icon" aria-hidden="true">🛒</div>
+        <div class="confirm-title" id="confirm-title">إضافة إلى السلة</div>
         <div class="confirm-sub" id="confirm-text"></div>
         <div class="confirm-actions">
           <button class="btn-gold" onclick="confirmAdd()">نعم، أضفه</button>
@@ -177,15 +228,31 @@
       class="modal-overlay"
       id="order-modal"
       style="display: none"
+      role="presentation"
       onclick="handleOrderOverlayClick(event)"
     >
-      <div class="modal order-modal">
-        <button class="modal-close" onclick="closeOrderModal()">✕</button>
-        <div class="modal-title">🛍️ تأكيد الطلب</div>
+      <div
+        class="modal order-modal"
+        role="dialog"
+        aria-labelledby="order-modal-title"
+        aria-modal="true"
+      >
+        <button
+          class="modal-close"
+          onclick="closeOrderModal()"
+          aria-label="إغلاق نافذة تأكيد الطلب"
+        >
+          <span aria-hidden="true">✕</span>
+        </button>
+        <div class="modal-title" id="order-modal-title">
+          <span aria-hidden="true">🛍️</span> تأكيد الطلب
+        </div>
 
         <!-- Order Summary Section -->
         <div class="order-summary" id="order-summary">
-          <div class="summary-title">📦 المنتجات المطلوبة:</div>
+          <div class="summary-title">
+            <span aria-hidden="true">📦</span> المنتجات المطلوبة:
+          </div>
           <div id="order-items-preview" class="order-items-list"></div>
           <div class="summary-divider"></div>
           <div class="summary-total" id="order-total-preview"></div>
@@ -193,30 +260,41 @@
 
         <!-- Form Section -->
         <div class="form-group">
-          <label class="form-label">الاسم الكامل *</label>
+          <label class="form-label" for="order-name">الاسم الكامل *</label>
           <input
             class="form-input"
             id="order-name"
             placeholder="أدخل اسمك الكامل"
+            required
+            aria-required="true"
           />
-          <div class="form-error" id="error-name"></div>
+          <div class="form-error" id="error-name" role="alert"></div>
         </div>
         <div class="form-group">
-          <label class="form-label">رقم الهاتف *</label>
-          <input class="form-input" id="order-phone" placeholder="06XXXXXXXX" />
-          <div class="form-error" id="error-phone"></div>
+          <label class="form-label" for="order-phone">رقم الهاتف *</label>
+          <input
+            class="form-input"
+            id="order-phone"
+            placeholder="06XXXXXXXX"
+            required
+            aria-required="true"
+            type="tel"
+          />
+          <div class="form-error" id="error-phone" role="alert"></div>
         </div>
         <div class="form-group">
-          <label class="form-label">العنوان الكامل *</label>
+          <label class="form-label" for="order-address">العنوان الكامل *</label>
           <textarea
             class="form-input"
             id="order-address"
             placeholder="المدينة، الحي، الشارع..."
+            required
+            aria-required="true"
           ></textarea>
-          <div class="form-error" id="error-address"></div>
+          <div class="form-error" id="error-address" role="alert"></div>
         </div>
         <div class="form-group">
-          <label class="form-label">ملاحظات (اختياري)</label>
+          <label class="form-label" for="order-notes">ملاحظات (اختياري)</label>
           <textarea
             class="form-input"
             id="order-notes"
@@ -227,36 +305,61 @@
           class="btn-whatsapp"
           style="width: 100%; justify-content: center"
           onclick="submitOrder()"
+          aria-label="إرسال الطلب عبر واتساب"
         >
-          <span>📲</span> إرسال الطلب عبر واتساب
+          <span aria-hidden="true">📲</span> إرسال الطلب عبر واتساب
         </button>
       </div>
     </div>
 
     <!-- TOAST -->
-    <div class="toast" id="toast" style="display: none"></div>
+    <div
+      class="toast"
+      id="toast"
+      style="display: none"
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+    ></div>
 
     <!-- QUICK VIEW MODAL -->
     <div
       class="modal-overlay"
       id="quick-view-modal"
       style="display: none"
+      role="presentation"
       onclick="handleQuickViewOverlayClick(event)"
     >
-      <div class="modal quick-view-modal">
-        <button class="modal-close" onclick="closeQuickViewModal()">✕</button>
+      <div
+        class="modal quick-view-modal"
+        role="dialog"
+        aria-labelledby="quickview-name"
+        aria-modal="true"
+      >
+        <button
+          class="modal-close"
+          onclick="closeQuickViewModal()"
+          aria-label="إغلاق المعاينة السريعة"
+        >
+          <span aria-hidden="true">✕</span>
+        </button>
         <div class="qv-container">
           <div class="qv-images-section">
             <img
               id="quickview-main-img"
               src=""
-              alt="Product"
+              alt="صورة المنتج الرئيسية"
               class="qv-main-img"
             />
-            <div class="qv-thumbnails" id="quickview-images"></div>
+            <div
+              class="qv-thumbnails"
+              id="quickview-images"
+              role="region"
+              aria-label="صور المنتج"
+            ></div>
           </div>
           <div class="qv-info-section">
-            <div class="qv-name" id="quickview-name"></div>
+            <h2 class="qv-name" id="quickview-name"></h2>
             <div class="qv-price-row">
               <div class="qv-price" id="quickview-price"></div>
               <div
@@ -275,8 +378,9 @@
                     closeQuickViewModal();
                   }
                 "
+                aria-label="اطلب المنتج الآن"
               >
-                📲 اطلب الآن
+                <span aria-hidden="true">📲</span> اطلب الآن
               </button>
               <button
                 class="btn-outline"
@@ -286,8 +390,9 @@
                     closeQuickViewModal();
                   }
                 "
+                aria-label="أضف المنتج إلى السلة"
               >
-                🛒 إضافة إلى السلة
+                <span aria-hidden="true">🛒</span> إضافة إلى السلة
               </button>
             </div>
           </div>
@@ -330,15 +435,24 @@
       function toggleMenu() {
         const menu = document.getElementById("mobileMenu");
         const overlay = document.getElementById("menuOverlay");
+        const hamburger = document.getElementById("hamburger");
         menu.classList.toggle("active");
         overlay.classList.toggle("active");
+        // Update aria-expanded
+        const isExpanded = hamburger.getAttribute("aria-expanded") === "true";
+        hamburger.setAttribute("aria-expanded", !isExpanded);
+        // Update aria-hidden
+        menu.setAttribute("aria-hidden", isExpanded);
       }
 
       function closeMenu() {
         const menu = document.getElementById("mobileMenu");
         const overlay = document.getElementById("menuOverlay");
+        const hamburger = document.getElementById("hamburger");
         menu.classList.remove("active");
         overlay.classList.remove("active");
+        hamburger.setAttribute("aria-expanded", "false");
+        menu.setAttribute("aria-hidden", "true");
       }
     </script>
     <script src="main.js"></script>

@@ -52,6 +52,60 @@ body {
   letter-spacing: 0.3px;
 }
 
+/* ============================================================
+   ACCESSIBILITY
+   ============================================================ */
+
+/* Skip to Main Link */
+.skip-to-main {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--gold);
+  color: var(--dark);
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 100;
+  border-radius: 0 0 4px 0;
+  font-weight: 700;
+}
+
+.skip-to-main:focus {
+  top: 0;
+}
+
+/* Focus Styles for Better Keyboard Navigation */
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* High Contrast Focus for Dark Theme */
+:focus-visible {
+  outline: 3px solid var(--gold-light);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Remove default outline for mouse users */
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+textarea:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Semantic HTML support */
+article,
+section,
+nav {
+  display: block;
+}
+
 /* SCROLLBAR */
 ::-webkit-scrollbar {
   width: 8px;
@@ -574,6 +628,12 @@ body {
   height: 200px;
   overflow: hidden;
   background: var(--dark2);
+  cursor: pointer;
+}
+
+.prod-img-wrap:focus {
+  outline: 3px solid var(--gold);
+  outline-offset: -3px;
 }
 
 .prod-img {
@@ -587,6 +647,15 @@ body {
 .prod-card:hover .prod-img {
   transform: scale(1.08);
   filter: brightness(1.1);
+}
+
+.prod-name {
+  cursor: pointer;
+}
+
+.prod-name:focus {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
 }
 
 .prod-badge {
@@ -1202,20 +1271,29 @@ body {
 .pd-thumb {
   width: 70px;
   height: 70px;
-  object-fit: cover;
+  padding: 0;
+  border: 2px solid transparent;
   border-radius: 10px;
   cursor: pointer;
-  border: 2px solid transparent;
   transition: all 0.3s ease;
   opacity: 0.7;
   box-shadow: var(--shadow-sm);
+  background: none;
+  overflow: hidden;
+}
+
+.pd-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .pd-thumb:hover {
   opacity: 1;
 }
 
-.pd-thumb.active {
+.pd-thumb.active,
+.pd-thumb[aria-current="true"] {
   border-color: var(--gold);
   opacity: 1;
   box-shadow: var(--shadow-gold);
@@ -1613,16 +1691,28 @@ textarea.form-input {
   transition: all 0.3s ease;
 }
 
-.breadcrumb span {
+.breadcrumb span,
+.breadcrumb button {
   color: var(--gold);
   cursor: pointer;
   transition: all 0.3s ease;
   font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
 }
 
-.breadcrumb span:hover {
+.breadcrumb span:hover,
+.breadcrumb button:hover {
   text-decoration: underline;
   filter: drop-shadow(0 0 8px rgba(201, 168, 76, 0.5));
+}
+
+.breadcrumb span[aria-current="page"] {
+  color: var(--text);
+  cursor: default;
+  pointer-events: none;
 }
 
 /* ============================================================
@@ -1736,7 +1826,7 @@ textarea.form-input {
   }
 }
 
-.empty h3 {
+.empty h2 {
   font-size: 22px;
   font-weight: 700;
   margin-bottom: 8px;

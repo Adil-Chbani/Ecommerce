@@ -546,29 +546,44 @@ function nextSlide(heroProducts) {
 
 // ========== RENDER HELPERS ==========
 function renderProductCard(p, onViewClick) {
+  const priceText = `${p.price} درهم`;
+  const badge = p.badge ? `باج: ${p.badge}` : "";
+  const availability = p.available ? "المنتج متوفر" : "المنتج غير متوفر";
+  const ariaLabel = `${p.name}، ${availability}، السعر: ${priceText}${badge ? `, ${badge}` : ""}`;
+
   return `
-    <div class="prod-card">
-      <div class="prod-img-wrap" onclick="${onViewClick}">
-        <img src="${p.image}" alt="${p.name}" class="prod-img" loading="lazy" />
-        ${p.badge ? `<div class="prod-badge">${p.badge}</div>` : ""}
-        ${!p.available ? `<div class="unavailable-overlay">غير متوفر</div>` : ""}
+    <article class="prod-card" aria-label="${ariaLabel}">
+      <div class="prod-img-wrap" onclick="${onViewClick}" role="button" tabindex="0" onkeypress="if(event.key==='Enter' || event.key===' ') ${onViewClick}">
+        <img src="${p.image}" alt="${p.name} - ${p.category}" class="prod-img" loading="lazy" />
+        ${p.badge ? `<div class="prod-badge" aria-label="باج: ${p.badge}">${p.badge}</div>` : ""}
+        ${!p.available ? `<div class="unavailable-overlay" aria-label="غير متوفر">غير متوفر</div>` : ""}
       </div>
       <div class="prod-info">
-        <div class="prod-name" onclick="${onViewClick}">${p.name}</div>
+        <h3 class="prod-name" onclick="${onViewClick}" role="button" tabindex="0" onkeypress="if(event.key==='Enter' || event.key===' ') ${onViewClick}">${p.name}</h3>
         <div class="prod-price-row">
-          <div class="prod-price">${p.price} درهم</div>
-          ${p.oldPrice ? `<div class="prod-old-price">${p.oldPrice} درهم</div>` : ""}
+          <div class="prod-price" aria-label="السعر الحالي">${p.price} درهم</div>
+          ${p.oldPrice ? `<div class="prod-old-price" aria-label="السعر الأصلي">${p.oldPrice} درهم</div>` : ""}
         </div>
         <div class="prod-buttons">
-          <button class="prod-btn" ${!p.available ? "disabled" : ""} onclick="navigate('product', ${p.id})">
+          <button 
+            class="prod-btn" 
+            ${!p.available ? "disabled" : ""} 
+            onclick="navigate('product', ${p.id})"
+            aria-label="عرض تفاصيل${" " + p.name}"
+          >
             ${p.available ? "📋 عرض المنتج" : "غير متوفر"}
           </button>
-          <button class="prod-btn btn-order-now" ${!p.available ? "disabled" : ""} onclick="openOrderModal([{...PRODUCTS.find(x=>x.id===${p.id}), qty:1}])">
+          <button 
+            class="prod-btn btn-order-now" 
+            ${!p.available ? "disabled" : ""} 
+            onclick="openOrderModal([{...PRODUCTS.find(x=>x.id===${p.id}), qty:1}])"
+            aria-label="اطلب${" " + p.name + " الآن عبر واتساب"}"
+          >
             ${p.available ? "📲 اطلب الآن" : "غير متوفر"}
           </button>
         </div>
       </div>
-    </div>
+    </article>
   `;
 }
 
@@ -739,40 +754,61 @@ function renderProductPage(productId) {
 
   const thumbsHTML =
     p.images.length > 1
-      ? `<div class="pd-thumbs">${p.images.map((img, i) => `<img src="${img}" alt="" class="pd-thumb ${i === 0 ? "active" : ""}" onclick="setThumb(${i}, ${productId})" />`).join("")}</div>`
+      ? `<div class="pd-thumbs" role="region" aria-label="معاينات الصور">${p.images.map((img, i) => `<button class="pd-thumb ${i === 0 ? "active" : ""}" onclick="setThumb(${i}, ${productId})" aria-label="صورة ${i + 1} من ${p.images.length}" aria-current="${i === 0 ? "true" : "false"}"><img src="${img}" alt="" /></button>`).join("")}</div>`
       : "";
 
   document.getElementById("app").innerHTML = `
     <div class="page-header">
       <div style="display: flex; align-items: center; gap: 12px;">
-        <button class="back-btn" onclick="goBack()">← رجوع</button>
+        <button class="back-btn" onclick="goBack()" aria-label="الرجوع للصفحة السابقة">← رجوع</button>
         <div>
-          <h1>${p.name}</h1>
-          <div class="breadcrumb">
-            <span onclick="navigate('home')">الرئيسية</span>
-            &nbsp;›&nbsp;
-            <span onclick="navigate('category', '${p.category}')">${cat?.label || ""}</span>
-            &nbsp;›&nbsp; ${p.name}
-          </div>
+          <h1 class="prod-title">${p.name}</h1>
+          <nav class="breadcrumb" role="navigation" aria-label="مسار التنقل">
+            <button onclick="navigate('home')" aria-label="الذهاب للرئيسية">الرئيسية</button>
+            <span aria-hidden="true">&nbsp;›&nbsp;</span>
+            <button onclick="navigate('category', '${p.category}')" aria-label="عرض جميع ${cat?.label || "المنتجات"}">${cat?.label || ""}</button>
+            <span aria-hidden="true">&nbsp;›&nbsp;</span>
+            <span aria-current="page">${p.name}</span>
+          </nav>
         </div>
       </div>
     </div>
     <div class="pd-layout">
       <div class="pd-gallery">
-        <img src="${p.images[0]}" alt="${p.name}" class="pd-main-img" id="pd-main-img" />
+        <img 
+          src="${p.images[0]}" 
+          alt="صورة رئيسية للمنتج: ${p.name}" 
+          class="pd-main-img" 
+          id="pd-main-img" 
+          role="img"
+        />
         ${thumbsHTML}
       </div>
       <div>
-        <div class="pd-status ${p.available ? "in" : "out"}">
-          ${p.available ? "✅ متوفر في المخزون" : "❌ غير متوفر حالياً"}
+        <div class="pd-status ${p.available ? "in" : "out"}" role="status" aria-live="polite">
+          ${p.available ? '<span aria-hidden="true">✅</span> متوفر في المخزون' : '<span aria-hidden="true">❌</span> غير متوفر حالياً'}
         </div>
-        <div class="pd-name">${p.name}</div>
-        <div class="pd-price">${p.price} درهم</div>
-        ${p.oldPrice ? `<div class="pd-old-price">${p.oldPrice} درهم</div>` : ""}
+        <h2 class="pd-name">${p.name}</h2>
+        <div class="pd-price" aria-label="السعر">${p.price} درهم</div>
+        ${p.oldPrice ? `<div class="pd-old-price" aria-label="السعر الأصلي">${p.oldPrice} درهم</div>` : ""}
         <div class="pd-desc">${p.description}</div>
         <div class="pd-actions">
-          <button class="btn-gold" ${!p.available ? "disabled" : ""} onclick="handleAddToCart(PRODUCTS.find(x=>x.id===${p.id}))">🛒 إضافة إلى السلة</button>
-          <button class="btn-whatsapp" ${!p.available ? "disabled" : ""} onclick="openOrderModal([{...PRODUCTS.find(x=>x.id===${p.id}), qty:1}])">📲 اطلب الآن</button>
+          <button 
+            class="btn-gold" 
+            ${!p.available ? "disabled" : ""} 
+            onclick="handleAddToCart(PRODUCTS.find(x=>x.id===${p.id}))"
+            aria-label="أضف ${p.name} إلى السلة"
+          >
+            <span aria-hidden="true">🛒</span> إضافة إلى السلة
+          </button>
+          <button 
+            class="btn-whatsapp" 
+            ${!p.available ? "disabled" : ""} 
+            onclick="openOrderModal([{...PRODUCTS.find(x=>x.id===${p.id}), qty:1}])"
+            aria-label="اطلب ${p.name} الآن عبر واتساب"
+          >
+            <span aria-hidden="true">📲</span> اطلب الآن
+          </button>
         </div>
       </div>
     </div>
@@ -785,8 +821,11 @@ function setThumb(index, productId) {
   if (!p) return;
   activeThumbIndex = index;
   document.getElementById("pd-main-img").src = p.images[index];
+  document.getElementById("pd-main-img").alt =
+    `صورة رئيسية للمنتج: ${p.name} - الصورة ${index + 1} من ${p.images.length}`;
   document.querySelectorAll(".pd-thumb").forEach((el, i) => {
     el.classList.toggle("active", i === index);
+    el.setAttribute("aria-current", i === index ? "true" : "false");
   });
 }
 
@@ -794,10 +833,10 @@ function setThumb(index, productId) {
 function renderCartPage() {
   if (cart.length === 0) {
     document.getElementById("app").innerHTML = `
-      <div class="page-header"><h1>🛒 سلة المشتريات</h1></div>
+      <div class="page-header"><h1>سلة المشتريات</h1></div>
       <div class="empty">
-        <div class="empty-icon">🛒</div>
-        <h3>السلة فارغة</h3>
+        <div class="empty-icon" aria-hidden="true">🛒</div>
+        <h2>السلة فارغة</h2>
         <p>لم تضف أي منتجات بعد</p>
         <button class="btn-gold" onclick="navigate('category', null)">تصفح المنتجات</button>
       </div>
@@ -811,37 +850,67 @@ function renderCartPage() {
   const itemsHTML = cart
     .map(
       (item) => `
-    <div class="cart-item">
-      <img src="${item.image}" alt="${item.name}" class="cart-item-img" />
+    <article class="cart-item" role="region" aria-label="منتج في السلة: ${item.name}">
+      <img src="${item.image}" alt="${item.name} - صورة المنتج في السلة" class="cart-item-img" />
       <div>
-        <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-price">${item.price} درهم / قطعة</div>
-        <div class="qty-ctrl">
-          <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty - 1})">−</button>
-          <span class="qty-val">${item.qty}</span>
-          <button class="qty-btn" onclick="updateQty(${item.id}, ${item.qty + 1})">+</button>
-          <span style="font-size:13px;color:var(--gold-light);margin-right:8px;">= ${(item.price * item.qty).toFixed(0)} درهم</span>
+        <h3 class="cart-item-name">${item.name}</h3>
+        <div class="cart-item-price" aria-label="السعر">${item.price} درهم / قطعة</div>
+        <div class="qty-ctrl" role="region" aria-label="التحكم في الكمية">
+          <button 
+            class="qty-btn" 
+            onclick="updateQty(${item.id}, ${item.qty - 1})"
+            aria-label="تقليل كمية ${item.name}"
+            title="تقليل الكمية"
+          >
+            −
+          </button>
+          <span class="qty-val" aria-label="الكمية الحالية">${item.qty}</span>
+          <button 
+            class="qty-btn" 
+            onclick="updateQty(${item.id}, ${item.qty + 1})"
+            aria-label="زيادة كمية ${item.name}"
+            title="زيادة الكمية"
+          >
+            +
+          </button>
+          <span style="font-size:13px;color:var(--gold-light);margin-right:8px;" aria-label="السعر الإجمالي للمنتج">= ${(item.price * item.qty).toFixed(0)} درهم</span>
         </div>
       </div>
-      <button class="del-btn" onclick="removeFromCart(${item.id})">🗑</button>
-    </div>
+      <button 
+        class="del-btn" 
+        onclick="removeFromCart(${item.id})"
+        aria-label="حذف ${item.name} من السلة"
+        title="حذف المنتج"
+      >
+        <span aria-hidden="true">🗑</span>
+      </button>
+    </article>
   `,
     )
     .join("");
 
   document.getElementById("app").innerHTML = `
-    <div class="page-header"><h1>🛒 سلة المشتريات (${cart.length} منتجات)</h1></div>
+    <div class="page-header">
+      <h1>سلة المشتريات <span aria-label="عدد المنتجات">(${cart.length} منتجات)</span></h1>
+    </div>
     <div class="cart-layout">
-      ${itemsHTML}
-      <div class="cart-summary">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
-          <span style="font-size:18px;font-weight:700;">المجموع الإجمالي</span>
-          <span class="cart-total">${total.toFixed(0)} درهم</span>
-        </div>
-        <button class="btn-whatsapp" style="width:100%;justify-content:center;" onclick="openOrderModal([...cart])">
-          📲 اطلب الكل عبر واتساب
-        </button>
+      <div role="list" aria-label="قائمة المنتجات في السلة">
+        ${itemsHTML}
       </div>
+      <section class="cart-summary" aria-labelledby="cart-total-label">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <span id="cart-total-label" style="font-size:18px;font-weight:700;">المجموع الإجمالي</span>
+          <span class="cart-total" aria-label="المجموع الإجمالي للسلة">${total.toFixed(0)} درهم</span>
+        </div>
+        <button 
+          class="btn-whatsapp" 
+          style="width:100%;justify-content:center;" 
+          onclick="openOrderModal([...cart])"
+          aria-label="اطلب جميع المنتجات في السلة عبر واتساب"
+        >
+          <span aria-hidden="true">📲</span> اطلب الكل عبر واتساب
+        </button>
+      </section>
     </div>
     ${renderFooter()}
   `;
@@ -874,7 +943,14 @@ function renderNavCategories() {
   const container = document.getElementById("nav-categories");
   container.innerHTML = CATEGORIES.map(
     (cat) => `
-    <button class="nav-cat-btn" onclick="navigate('category', '${cat.id}')">${cat.label}</button>
+    <button 
+      class="nav-cat-btn" 
+      onclick="navigate('category', '${cat.id}')"
+      aria-label="${cat.label}"
+      title="${cat.label}"
+    >
+      <span aria-hidden="true">${cat.icon}</span> ${cat.label}
+    </button>
   `,
   ).join("");
 }
