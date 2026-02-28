@@ -61,7 +61,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="dns-prefetch" href="https://images.unsplash.com" />
 
-    <!-- Fonts -->
+    <!-- Fonts with preload for better performance -->
+    <link
+      rel="preload"
+      href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cinzel+Decorative:wght@700&display=swap"
+      as="style"
+    />
     <link
       href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Cinzel+Decorative:wght@700&display=swap"
       rel="stylesheet"
@@ -69,6 +74,30 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="index.css" />
+
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+      .skip-to-main:focus {
+        top: 0;
+      }
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: rgba(10, 10, 15, 0.95);
+        border-bottom: 1px solid rgba(201, 168, 76, 0.2);
+        padding: 0 24px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      body {
+        margin-top: 64px;
+      }
+    </style>
 
     <!-- Structured Data (Schema.org) -->
     <script type="application/ld+json">
@@ -400,36 +429,8 @@
       </div>
     </div>
 
-    <!-- MOBILE MENU -->
-    <div class="mobile-menu" id="mobileMenu">
-      <div class="mobile-menu-header">
-        <div
-          class="nav-logo"
-          onclick="
-            navigate('home');
-            closeMenu();
-          "
-          style="margin: 0"
-        >
-          Asala Shop
-        </div>
-        <button class="close-menu" onclick="closeMenu()">✕</button>
-      </div>
-      <div class="mobile-menu-content" id="mobile-menu-content"></div>
-      <div class="mobile-menu-footer">
-        <button
-          class="btn-whatsapp"
-          style="width: 100%; justify-content: center; margin: 16px 12px 0"
-          onclick="
-            openOrderModal(cart.length > 0 ? [...cart] : []);
-            closeMenu();
-          "
-        >
-          📲 اطلب الآن
-        </button>
-      </div>
-    </div>
-    <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+    <!-- MAIN CONTENT -->
+    <main id="app"></main>
 
     <script>
       function toggleMenu() {

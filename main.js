@@ -625,18 +625,29 @@ function renderHomePage() {
   const dotsHTML = heroProducts
     .map(
       (_, i) =>
-        `<button class="dot ${i === 0 ? "active" : ""}" onclick="slideIndex=${i};updateSlide(PRODUCTS.filter(p=>p.badge).slice(0,4))"></button>`,
+        `<button 
+          class="dot ${i === 0 ? "active" : ""}" 
+          onclick="slideIndex=${i};updateSlide(PRODUCTS.filter(p=>p.badge).slice(0,4))"
+          aria-label="انتقل إلى الشريحة ${i + 1}"
+          role="tab"
+          aria-selected="${i === 0 ? "true" : "false"}"
+        ></button>`,
     )
     .join("");
 
   const catsHTML = CATEGORIES.map((cat) => {
     const count = PRODUCTS.filter((p) => p.category === cat.id).length;
     return `
-      <div class="cat-card" onclick="navigate('category', '${cat.id}')">
-        <div class="cat-icon">${cat.icon}</div>
-        <div class="cat-name">${cat.label}</div>
+      <button 
+        class="cat-card" 
+        onclick="navigate('category', '${cat.id}')"
+        role="listitem"
+        aria-label="${cat.label}، ${count} منتج"
+      >
+        <div class="cat-icon" aria-hidden="true">${cat.icon}</div>
+        <h3 class="cat-name">${cat.label}</h3>
         <div class="cat-count">${count} منتج</div>
-      </div>
+      </button>
     `;
   }).join("");
 
@@ -645,24 +656,24 @@ function renderHomePage() {
     .join("");
 
   document.getElementById("app").innerHTML = `
-    <div class="hero" id="hero-slider">
+    <section class="hero" id="hero-slider" role="region" aria-label="عرض المنتجات البارزة">
       ${slidesHTML}
-      <button class="slide-arrow prev" onclick="prevSlide(PRODUCTS.filter(p=>p.badge).slice(0,4))">›</button>
-      <button class="slide-arrow next" onclick="nextSlide(PRODUCTS.filter(p=>p.badge).slice(0,4))">‹</button>
-      <div class="slide-dots">${dotsHTML}</div>
-    </div>
+      <button class="slide-arrow prev" onclick="prevSlide(PRODUCTS.filter(p=>p.badge).slice(0,4))" aria-label="الشريحة السابقة">›</button>
+      <button class="slide-arrow next" onclick="nextSlide(PRODUCTS.filter(p=>p.badge).slice(0,4))" aria-label="الشريحة التالية">‹</button>
+      <div class="slide-dots" role="tablist" aria-label="عرض الشرائح">${dotsHTML}</div>
+    </section>
 
-    <div class="section">
-      <div class="section-title">🏪 تصفح الأقسام</div>
-      <div class="section-sub">اكتشف مجموعتنا المتنوعة من المنتجات المختارة بعناية</div>
-      <div class="cat-grid">${catsHTML}</div>
-    </div>
+    <section class="section" aria-labelledby="categories-title">
+      <h2 class="section-title" id="categories-title"><span aria-hidden="true">🏪</span> تصفح الأقسام</h2>
+      <p class="section-sub">اكتشف مجموعتنا المتنوعة من المنتجات المختارة بعناية</p>
+      <div class="cat-grid" role="list">${catsHTML}</div>
+    </section>
 
-    <div class="section" style="padding-top:0;">
-      <div class="section-title">🔥 منتجاتنا</div>
-      <div class="section-sub">جميع المنتجات المتاحة في متجرنا</div>
-      <div class="prod-grid">${featuredHTML}</div>
-    </div>
+    <section class="section" style="padding-top:0;" aria-labelledby="products-title">
+      <h2 class="section-title" id="products-title"><span aria-hidden="true">🔥</span> منتجاتنا</h2>
+      <p class="section-sub">جميع المنتجات المتاحة في متجرنا</p>
+      <div class="prod-grid" role="list">${featuredHTML}</div>
+    </section>
 
     ${renderFooter()}
   `;
