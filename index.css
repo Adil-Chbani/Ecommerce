@@ -1196,7 +1196,7 @@ nav {
   border-radius: 12px;
   border: 1px solid var(--border);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all  0.3s ease;
 }
 
 .qv-main-img:hover {
