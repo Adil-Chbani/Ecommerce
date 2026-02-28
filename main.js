@@ -551,10 +551,20 @@ function renderProductCard(p, onViewClick) {
   const availability = p.available ? "المنتج متوفر" : "المنتج غير متوفر";
   const ariaLabel = `${p.name}، ${availability}، السعر: ${priceText}${badge ? `, ${badge}` : ""}`;
 
+  // Optimize image for mobile vs desktop
+  let imageUrl = p.image;
+  if (window.innerWidth < 768) {
+    // Mobile: use smaller, lower quality image
+    imageUrl = imageUrl
+      .replace("w=400", "w=250")
+      .replace("w=600", "w=250")
+      .replace("q=80", "q=50");
+  }
+
   return `
     <article class="prod-card" aria-label="${ariaLabel}">
       <div class="prod-img-wrap" onclick="${onViewClick}" role="button" tabindex="0" onkeypress="if(event.key==='Enter' || event.key===' ') ${onViewClick}">
-        <img src="${p.image}" alt="${p.name} - ${p.category}" class="prod-img" loading="lazy" />
+        <img src="${imageUrl}" alt="${p.name} - ${p.category}" class="prod-img" loading="lazy" decoding="async" />
         ${p.badge ? `<div class="prod-badge" aria-label="باج: ${p.badge}">${p.badge}</div>` : ""}
         ${!p.available ? `<div class="unavailable-overlay" aria-label="غير متوفر">غير متوفر</div>` : ""}
       </div>
@@ -604,10 +614,19 @@ function renderHomePage() {
   const featured = PRODUCTS;
 
   const slidesHTML = heroProducts
-    .map(
-      (p, i) => `
+    .map((p, i) => {
+      // Optimize image size for mobile vs desktop
+      let imageUrl = p.image;
+      if (window.innerWidth < 768) {
+        // Mobile: use smaller image
+        imageUrl = imageUrl
+          .replace("w=400", "w=300")
+          .replace("w=600", "w=300")
+          .replace("q=80", "q=60");
+      }
+      return `
     <div class="slide ${i === 0 ? "active" : ""}">
-      <img src="${p.image}" alt="${p.name}" class="slide-img" />
+      <img src="${imageUrl}" alt="${p.name}" class="slide-img" loading="${i === 0 ? "eager" : "lazy"}" />
       <div class="slide-content">
         ${p.badge ? `<div class="slide-badge">${p.badge}</div>` : ""}
         <div class="slide-title">${p.name}</div>
@@ -617,9 +636,8 @@ function renderHomePage() {
           <button class="btn-whatsapp" onclick="openOrderModal([{...PRODUCTS.find(x=>x.id===${p.id}), qty:1}])">اطلب الآن</button>
         </div>
       </div>
-    </div>
-  `,
-    )
+    </div>`;
+    })
     .join("");
 
   const dotsHTML = heroProducts
@@ -995,13 +1013,49 @@ function renderMobileMenu() {
 // Load cart from storage
 loadCartFromStorage();
 
-// Parse initial URL and set current page
-if (!window.location.hash) {
-  window.location.hash = "#/";
+// Defer initial render to after fonts load for better performance
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initPage);
+} else {
+  initPage();
 }
-const initialPath = parseUrlPath();
-currentPage = initialPath;
 
-renderNavCategories();
-renderMobileMenu();
-renderPage();
+function initPage() {
+  // Parse initial URL and set current page
+  if (!window.location.hash) {
+    window.location.hash = "#/";
+  }
+  const initialPath = parseUrlPath();
+  currentPage = initialPath;
+
+  renderNavCategories();
+  renderMobileMenu();
+
+  // Add mobile class for performance
+  const isMobile = window.innerWidth < 768;
+  if (isMobile) {
+    document.documentElement.classList.add("mobile-device");
+  }
+
+  // Defer heavy rendering
+  if (window.requestIdleCallback) {
+    requestIdleCallback(() => {
+      renderPage();
+      // Enable animations after render
+      if (isMobile) {
+        setTimeout(() => {
+          document.documentElement.classList.add("interactive");
+        }, 500);
+      }
+    });
+  } else {
+    setTimeout(() => {
+      renderPage();
+      if (isMobile) {
+        setTimeout(() => {
+          document.documentElement.classList.add("interactive");
+        }, 500);
+      }
+    }, 0);
+  }
+}

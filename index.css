@@ -3,6 +3,58 @@
    Premium Dark Theme with Gold Accents
    ============================================ */
 
+/* Mobile performance optimization */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Disable animations on initial mobile load */
+html.mobile-device {
+  scroll-behavior: auto;
+}
+
+html.mobile-device * {
+  animation: none !important;
+  transition: none !important;
+}
+
+html.mobile-device.interactive * {
+  animation: inherit;
+  transition: inherit;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  /* Disable complex shadows and gradients on mobile for better performance */
+  *::before,
+  *::after {
+    box-shadow: none !important;
+  }
+
+  html.mobile-device .nav-logo:hover,
+  html.mobile-device button:hover,
+  html.mobile-device .prod-card:hover {
+    filter: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  html.mobile-device.interactive .nav-logo:hover,
+  html.mobile-device.interactive button:hover,
+  html.mobile-device.interactive .prod-card:hover {
+    filter: inherit;
+    box-shadow: inherit;
+    transform: inherit;
+  }
+}
+
 *,
 *::before,
 *::after {
