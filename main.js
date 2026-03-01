@@ -169,7 +169,7 @@ const CATEGORIES = [
   { id: "other", label: "منتجات أخرى", icon: "✨" },
 ];
 
-const WHATSAPP_NUMBER = "212661978081";
+const WHATSAPP_NUMBER = "212622822241";
 
 // ========== STATE ==========
 let cart = [];
